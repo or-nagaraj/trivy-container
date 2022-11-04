@@ -5,17 +5,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/state"
-
-	"github.com/aquasecurity/defsec/pkg/framework"
-
-	"github.com/aquasecurity/trivy/pkg/cloud/aws/cache"
-	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/defsec/pkg/state"
+	"github.com/aquasecurity/trivy/pkg/cloud/aws/cache"
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type AWSScanner struct {
@@ -77,10 +73,9 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		)
 	}
 
-	scannerOpts = append(scannerOpts, options.ScannerWithFrameworks(
-		framework.Default,
-		framework.CIS_AWS_1_2,
-	))
+	if len(option.Compliance) > 0 {
+		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance))
+	}
 
 	scanner := aws.New(scannerOpts...)
 
